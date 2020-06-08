@@ -10,46 +10,51 @@ namespace dmarketApp
 {
 	class Program
 	{
+		static const int DISCOUNT = 23;
 
-		static readonly HttpClient client = new HttpClient();
 		static async Task Main(string[] args)
 		{
+			var client = new HttpClient();
 
 			while (true)
 			{
 				try
 				{
-					string link =
-				   "https://api.dmarket.com/exchange/v1/market/items?orderBy=best_deals&orderDir=desc&title=&priceFrom=0&priceTo=4370&treeFilters=&gameId=a8db&offset=0&limit=100&currency=USD";
-					HttpResponseMessage response = await client.GetAsync(link);
+					string link = @"https://api.dmarket.com/exchange/v1/market/items?orderBy=best_deals&orderDir=desc&title=&priceFrom=0&priceTo=4370&treeFilters=&gameId=a8db&offset=0&limit=100&currency=USD";
+					var response = await client.GetAsync(link);
 					response.EnsureSuccessStatusCode();
 					string responseBody = await response.Content.ReadAsStringAsync();
 
-					var firstItem = JsonConvert.DeserializeObject<DmarketItem>(responseBody);
+					var responseDeserialized = JsonConvert.DeserializeObject<DMarketResponse>(responseBody);
 				
-					foreach (var item in firstItem.objects)
+					foreach (var item in responseDeserialized.Objects)
 					{
-
-						if (item.discount >= 23 && item.title != "CS:GO Weapon Case")
+						if (item.Discount >= DISCOUNT && item.Title != "CS:GO Weapon Case")
 						{
-							System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"music/дора.wav");
-							player.Play();
-							Console.WriteLine(item.discount);
-							Console.WriteLine(item.title);
-							Console.ReadLine();
-							player.Stop();
+							PlayNotification();
+							PrintItemData(item);
 						}
 					}
 				}
-				catch (HttpRequestException e)
+				catch (Exception e)
 				{
-					Console.WriteLine("\nException Caught!");
-					Console.WriteLine("Message :{0} ", e.Message);
+					Console.WriteLine($@"Exception Caught!");
+					Console.WriteLine($"Message: {e.Message} ");
 				}
 				Thread.Sleep(200);
 			}
+		}
 
+		static void PlayNotification()
+		{
+			var player = new System.Media.SoundPlayer(@"music/дора.wav");
+			player.Play();
+		}
+
+		static void PrintItemData(Item item)
+		{
+			Console.WriteLine(item.Discount);
+			Console.WriteLine(item.Title);
 		}
 	}
-
 }

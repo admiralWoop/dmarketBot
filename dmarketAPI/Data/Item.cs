@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace dmarketAPI.Data
 {
-	public class DmarketItem
+	public class DMarketResponse
 	{
-		public Item[] objects { get; set; }
+		public Item[] Objects { get; set; }
 	}
+
 	public class Item
 	{
-		public int discount { get; set; }
-		public string title { get; set; }
+		public int Discount { get; set; }
+		public string Title { get; set; }
 	}
 }
